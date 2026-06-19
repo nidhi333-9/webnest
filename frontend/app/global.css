@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-sage: #4f6f52;
+  --color-sage-light: #739072;
+  --color-sage-soft: #dde6d5;
+
+  --color-cream: #f8f5f0;
+
+  --color-text: #2c3639;
+  --color-text-light: #526166;
+
+  --radius-card: 1rem;
+  --radius-button: 0.75rem;
+}
+
+/* Optional: Clean global focus state for premium accessibility */
+@layer base {
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-sage/40;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(79, 111, 82, 0.5);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 111, 82, 0.8);
+}
