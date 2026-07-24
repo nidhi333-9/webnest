@@ -2,21 +2,33 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { usePathname } from "next/navigation"; // Added to handle active styling dynamically
+import { usePathname, useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 
-export default function Navbar() {
+export default function Navbar({
+  isLoggedIn = false,
+  username,
+}: {
+  isLoggedIn?: boolean;
+  username?: string;
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
-  // Helper to check if a link is active
   const isActive = (path: string) => pathname === path;
 
   const navLinks = [
     { href: "/discover", label: "Discover" },
     { href: "/#features", label: "Features" },
-    { href: "/login", label: "Login" },
+    ...(isLoggedIn ? [] : [{ href: "/login", label: "Login" }]),
   ];
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <nav className="sticky top-0 z-50 border-b border-text/5 bg-cream/80 backdrop-blur-md transition-all duration-300">
@@ -50,7 +62,6 @@ export default function Navbar() {
               }`}
             >
               {link.label}
-              {/* Animated underline for active/hover states */}
               <span
                 className={`absolute bottom-0 left-0 h-0.5 bg-sage transition-all duration-300 ${
                   isActive(link.href) ? "w-full" : "w-0 hover:w-full"
@@ -59,12 +70,29 @@ export default function Navbar() {
             </Link>
           ))}
 
-          <Link
-            href="/register"
-            className="rounded-button bg-sage px-5 py-2.5 text-sm font-semibold text-cream shadow-sm transition-all duration-200 hover:bg-sage-light hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Get Started
-          </Link>
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <Link
+                href="/dashboard"
+                className="rounded-button bg-sage px-5 py-2.5 text-sm font-semibold text-cream shadow-sm transition-all duration-200 hover:bg-sage-light hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-sm font-medium text-text-light hover:text-text transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/register"
+              className="rounded-button bg-sage px-5 py-2.5 text-sm font-semibold text-cream shadow-sm transition-all duration-200 hover:bg-sage-light hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+            >
+              Get Started
+            </Link>
+          )}
         </div>
 
         {/* Mobile Button */}
@@ -77,7 +105,7 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Menu (Animated Slide-Down) */}
+      {/* Mobile Menu */}
       <div
         className={`grid transition-all duration-300 ease-in-out md:hidden ${
           isOpen
@@ -100,13 +128,34 @@ export default function Navbar() {
               </Link>
             ))}
 
-            <Link
-              href="/register"
-              onClick={() => setIsOpen(false)}
-              className="mt-2 rounded-button bg-sage py-3 text-center text-sm font-semibold text-cream shadow-sm active:bg-sage-light"
-            >
-              Get Started
-            </Link>
+            {isLoggedIn ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="mt-2 rounded-button bg-sage py-3 text-center text-sm font-semibold text-cream shadow-sm active:bg-sage-light"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsOpen(false);
+                    handleLogout();
+                  }}
+                  className="text-sm font-medium text-text-light text-center"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/register"
+                onClick={() => setIsOpen(false)}
+                className="mt-2 rounded-button bg-sage py-3 text-center text-sm font-semibold text-cream shadow-sm active:bg-sage-light"
+              >
+                Get Started
+              </Link>
+            )}
           </div>
         </div>
       </div>

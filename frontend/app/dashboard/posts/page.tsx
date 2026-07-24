@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react";
 import {
   Plus,
   FileText,
@@ -12,50 +13,78 @@ import {
   Search,
 } from "lucide-react";
 
-// Mock data structure to simulate actual blog entries from your future database
-const INITIAL_POSTS = [
-  {
-    id: "1",
-    title: "Understanding Database Isolation Levels",
-    slug: "understanding-database-isolation-levels",
-    status: "Published",
-    date: "June 14, 2026",
-  },
-  {
-    id: "2",
-    title: "Building a Multi-Tenant Core Layer inside Postgres",
-    slug: "building-multi-tenant-postgres",
-    status: "Published",
-    date: "May 29, 2026",
-  },
-  {
-    id: "3",
-    title: "Why Docker Containers Fail Silently in Local Swarms",
-    slug: "docker-containers-silently-failing",
-    status: "Draft",
-    date: "In Progress",
-  },
-];
+type Post = {
+  id: string;
+  title: string;
+  slug: string;
+  published: boolean;
+  createdAt: string;
+};
 
 export default function Posts() {
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter posts based on search input
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const res = await fetch("/api/posts");
+        if (!res.ok) {
+          throw new Error("Failed to load posts");
+        }
+        const data = await res.json();
+        setPosts(data);
+      } catch (err) {
+        setError("Could not load your posts. Try refreshing.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPosts();
+  }, []);
+
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const handleDelete = (id: string) => {
-    if (confirm("Are you sure you want to delete this post?")) {
-      setPosts(posts.filter((post) => post.id !== id));
+  const handleDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this post?")) return;
+
+    // Optimistically remove from UI first
+    const previousPosts = posts;
+    setPosts(posts.filter((post) => post.id !== id));
+
+    try {
+      const res = await fetch(`/api/posts/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        throw new Error("Delete failed");
+      }
+    } catch (err) {
+      // Roll back if the server call failed
+      setPosts(previousPosts);
+      alert("Failed to delete post. Please try again.");
     }
   };
+
+  const formatDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
 
   return (
     <div className="min-h-screen bg-cream/30 p-6 md:p-10">
       <div className="mx-auto max-w-5xl">
-        {/* Header Control Panel Bar */}
+        <Link
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-text-light hover:text-text transition-colors mb-6"
+        >
+          <ArrowLeft size={16} />
+          Back to Dashboard
+        </Link>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-text/5 pb-6 mb-8">
           <div>
             <h1 className="text-2xl font-extrabold text-text tracking-tight">
@@ -75,7 +104,6 @@ export default function Posts() {
           </Link>
         </div>
 
-        {/* Search Utility Bar */}
         <div className="relative mb-6 max-w-md">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-text-light/40">
             <Search size={18} />
@@ -89,8 +117,15 @@ export default function Posts() {
           />
         </div>
 
-        {/* Content Section: Data Table or Empty State Card */}
-        {filteredPosts.length === 0 ? (
+        {loading ? (
+          <div className="rounded-card border border-text/5 bg-white p-12 text-center shadow-sm text-text-light text-sm">
+            Loading your posts...
+          </div>
+        ) : error ? (
+          <div className="rounded-card border border-red-100 bg-red-50 p-12 text-center text-red-600 text-sm">
+            {error}
+          </div>
+        ) : filteredPosts.length === 0 ? (
           <div className="rounded-card border border-dashed border-text/10 bg-white p-12 text-center shadow-sm">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-cream text-text-light/60 mb-4">
               <FileText size={24} />
@@ -111,7 +146,6 @@ export default function Posts() {
             )}
           </div>
         ) : (
-          /* Structured Table Data Sheet */
           <div className="overflow-hidden rounded-card border border-text/5 bg-white shadow-xl shadow-sage-soft/10">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -129,7 +163,6 @@ export default function Posts() {
                       key={post.id}
                       className="hover:bg-cream/20 transition-colors group"
                     >
-                      {/* Post Title & Dynamic URL Handle Preview */}
                       <td className="px-6 py-4 max-w-md">
                         <div className="font-semibold text-text truncate group-hover:text-sage transition-colors">
                           {post.title}
@@ -138,41 +171,37 @@ export default function Posts() {
                           <Globe size={12} /> /{post.slug}
                         </div>
                       </td>
-                      {/* Dynamic Badge Status Anchor */}
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-                            post.status === "Published"
+                            post.published
                               ? "bg-sage-soft/60 text-text"
                               : "bg-cream text-text-light/60 border border-text/5"
                           }`}
                         >
                           <span
                             className={`h-1.5 w-1.5 rounded-full ${
-                              post.status === "Published"
-                                ? "bg-sage"
-                                : "bg-text-light/40"
+                              post.published ? "bg-sage" : "bg-text-light/40"
                             }`}
                           />
-                          {post.status}
+                          {post.published ? "Published" : "Draft"}
                         </span>
                       </td>
-                      {/* Creation Timestamp Panel */}
                       <td className="px-6 py-4 whitespace-nowrap text-text-light text-xs font-medium">
                         <div className="flex items-center gap-1.5">
                           <Calendar size={14} className="text-text-light/40" />
-                          {post.date}
+                          {formatDate(post.createdAt)}
                         </div>
                       </td>
-                      {/* Modifier Control Accessors */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-xs font-medium">
                         <div className="flex items-center justify-end gap-2">
-                          <button
+                          <Link
+                            href={`/dashboard/posts/${post.id}/edit`}
                             className="rounded p-1.5 text-text-light hover:bg-cream hover:text-text transition-all"
                             title="Edit Post"
                           >
                             <Edit2 size={16} />
-                          </button>
+                          </Link>
                           <button
                             onClick={() => handleDelete(post.id)}
                             className="rounded p-1.5 text-text-light hover:bg-red-50 hover:text-red-600 transition-all"

@@ -1,50 +1,106 @@
+// app/dashboard/page.tsx
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   FileText,
-  Eye,
   Settings,
   Plus,
   Layout,
   ArrowUpRight,
   Globe,
+  Loader2,
 } from "lucide-react";
 
+type Post = {
+  id: string;
+  title: string;
+  published: boolean;
+  publishedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type Profile = {
+  id?: string;
+  heroTitle: string | null;
+  bio: string | null;
+} | null;
+
 export default function Dashboard() {
-  // Mock metrics mirroring your initial MVP scope
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [profile, setProfile] = useState<Profile>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const [postsRes, profileRes] = await Promise.all([
+          fetch("/api/posts"),
+          fetch("/api/profile"),
+        ]);
+
+        if (!postsRes.ok || !profileRes.ok) {
+          throw new Error("Failed to load dashboard data");
+        }
+
+        setPosts(await postsRes.json());
+        setProfile(await profileRes.json());
+      } catch (err) {
+        setError("Couldn't load your dashboard. Please refresh and try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    load();
+  }, []);
+
+  const publishedCount = posts.filter((p) => p.published).length;
+
+  const profileStatus =
+    profile && (profile.heroTitle?.trim() || profile.bio?.trim())
+      ? "Active"
+      : "Not Started";
+
+  const recentActivity = posts.slice(0, 3).map((post) => ({
+    title: post.title,
+    status: post.published ? "Published" : "Draft",
+    date: formatDate(post.createdAt),
+  }));
+
   const stats = [
     {
       label: "Total Published Posts",
-      value: "2",
+      value: String(publishedCount),
       icon: <FileText size={20} className="text-text" />,
       bgColor: "bg-sage-soft/40",
     },
     {
       label: "Profile Status",
-      value: "Active",
+      value: profileStatus,
       icon: <Globe size={20} className="text-sage" />,
       bgColor: "bg-sage-soft/60",
     },
   ];
 
-  const recentActivity = [
-    {
-      title: "Understanding Database Isolation Levels",
-      status: "Published",
-      date: "June 14, 2026",
-    },
-    {
-      title: "Building a Multi-Tenant Core Layer inside Postgres",
-      status: "Published",
-      date: "May 29, 2026",
-    },
-    {
-      title: "Why Docker Containers Fail Silently in Local Swarms",
-      status: "Draft",
-      date: "June 19, 2026",
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-cream/30 p-6 md:p-10 flex items-center justify-center">
+        <Loader2 className="animate-spin text-sage" size={28} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-cream/30 p-6 md:p-10 flex items-center justify-center">
+        <p className="text-sm text-red-500">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-cream/30 p-6 md:p-10">
@@ -112,6 +168,18 @@ export default function Dashboard() {
               </div>
 
               <div className="divide-y divide-text/5">
+                {recentActivity.length === 0 && (
+                  <p className="px-6 py-6 text-sm text-text-light/60">
+                    No posts yet.{" "}
+                    <Link
+                      href="/dashboard/posts/new"
+                      className="text-sage hover:underline"
+                    >
+                      Write your first one.
+                    </Link>
+                  </p>
+                )}
+
                 {recentActivity.map((activity, idx) => (
                   <div
                     key={idx}
@@ -176,4 +244,12 @@ export default function Dashboard() {
       </div>
     </div>
   );
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
 }
