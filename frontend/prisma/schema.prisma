@@ -8,14 +8,12 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  password  String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+  id          String       @id @default(cuid())
+  name        String
+  email       String       @unique
+  password    String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   memberships Membership[]
   sessions    Session[]
 }
@@ -24,48 +22,158 @@ model Session {
   id        String   @id @default(cuid())
   token     String   @unique
   expiresAt DateTime
-
   createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([expiresAt])
 }
 
 model Tenant {
-  id          String   @id @default(cuid())
-
-  username    String   @unique
-  displayName String
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  isPublic Boolean @default(true)
-
-  customDomain String? @unique
-  memberships Membership[]
-
-  profile     Profile?
-  posts       Post[]
-  projects    Project[]
-  socialLinks SocialLink[]
-  skills      Skill[]
-  categories  Category[]
+  id           String       @id @default(cuid())
+  username     String       @unique
+  displayName  String
+  createdAt    DateTime     @default(now())
+  customDomain String?      @unique
+  isPublic     Boolean      @default(true)
+  updatedAt    DateTime     @updatedAt
+  categories   Category[]
+  memberships  Membership[]
+  posts        Post[]
+  profile      Profile?
+  projects     Project[]
+  skills       Skill[]
+  socialLinks  SocialLink[]
 }
 
 model Membership {
-  id String @id @default(cuid())
-
-  role Role @default(OWNER)
-
+  id       String @id @default(cuid())
   userId   String
   tenantId String
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role     Role   @default(OWNER)
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, tenantId])
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  bio          String?
+  heroTitle    String?
+  heroSubtitle String?
+  avatar       String?
+  resumeUrl    String?
+  location     String?
+  emailPublic  Boolean  @default(false)
+  showResume   Boolean  @default(true)
+  theme        Theme    @default(LIGHT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  tenantId     String   @unique
+  tenant       Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model SocialLink {
+  id       String         @id @default(cuid())
+  platform SocialPlatform
+  url      String
+  tenantId String
+  tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, platform])
+  @@index([tenantId])
+}
+
+model Skill {
+  id       String @id @default(cuid())
+  name     String
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
+}
+
+model Project {
+  id           String              @id @default(cuid())
+  title        String
+  description  String
+  githubUrl    String?
+  liveUrl      String?
+  imageUrl     String?
+  featured     Boolean             @default(false)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  tenantId     String
+  tenant       Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  technologies ProjectTechnology[]
+
+  @@index([tenantId])
+}
+
+model Technology {
+  id       String              @id @default(cuid())
+  name     String              @unique
+  projects ProjectTechnology[]
+}
+
+model ProjectTechnology {
+  projectId    String
+  technologyId String
+  project      Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  technology   Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, technologyId])
+}
+
+model Post {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String
+  content     String
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tenantId    String
+  categoryId  String?
+  coverImage  String?
+  excerpt     String?
+  publishedAt DateTime?
+  readingTime Int?
+  views       Int       @default(0)
+  category    Category? @relation(fields: [categoryId], references: [id])
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tags        PostTag[]
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, published, publishedAt(sort: Desc)])
+  @@index([categoryId])
+}
+
+model Category {
+  id       String @id @default(cuid())
+  name     String
+  tenantId String
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  posts    Post[]
+
+  @@unique([tenantId, name])
+}
+
+model Tag {
+  id    String    @id @default(cuid())
+  name  String    @unique
+  posts PostTag[]
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
 }
 
 enum Role {
@@ -73,41 +181,9 @@ enum Role {
   EDITOR
 }
 
-model Profile {
-  id String @id @default(cuid())
-
-  bio          String? @db.Text
-  heroTitle    String?
-  heroSubtitle String?
-
-  avatar    String?
-  resumeUrl String?
-  location  String?
-  emailPublic Boolean @default(false)
-   
-  showResume Boolean @default(true)
-  theme Theme @default(LIGHT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tenantId String @unique
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-}
-
 enum Theme {
   LIGHT
   DARK
-}
-
-model SocialLink {
-  id String @id @default(cuid())
-
-  platform SocialPlatform
-  url      String
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  @@unique([tenantId, platform])
-  @@index([tenantId])
 }
 
 enum SocialPlatform {
@@ -117,119 +193,4 @@ enum SocialPlatform {
   YOUTUBE
   INSTAGRAM
   PORTFOLIO
-}
-
-model Skill {
-  id String @id @default(cuid())
-
-  name String
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  // Fix: Prevents a tenant from adding the exact same skill multiple times
-  @@unique([tenantId, name])
-  @@index([tenantId])
-}
-
-model Project {
-  id String @id @default(cuid())
-
-  title       String
-  description String @db.Text
-
-  githubUrl String?
-  liveUrl   String?
-  imageUrl  String?
-
-  featured Boolean @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  technologies ProjectTechnology[]
-  @@index([tenantId])
-}
-
-model Technology {
-  id String @id @default(cuid())
-
-  name String @unique
-
-  projects ProjectTechnology[]
-}
-
-model ProjectTechnology {
-  projectId    String
-  technologyId String
-
-  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  technology Technology @relation(fields: [technologyId], references: [id], onDelete: Cascade)
-
-  @@id([projectId, technologyId])
-}
-
-model Post {
-  id String @id @default(cuid())
-
-  title      String
-  slug       String
-  excerpt    String? @db.Text
-  content    String  @db.Text // Fix: Allows large Markdown/HTML/Rich-Text payloads
-  coverImage String?
-
-  published   Boolean   @default(false)
-  publishedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  tenantId   String
-  categoryId String?
-
-  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  views Int @default(0)
-
-  readingTime Int?
-  tags PostTag[]
-
-  @@unique([tenantId, slug])
-  // Fix: Indexes to make querying tenant blog feeds extremely fast
-  @@index([tenantId, published, publishedAt(sort: Desc)])
-  @@index([categoryId])
-}
-
-model Category {
-  id String @id @default(cuid())
-
-  name String
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  posts Post[]
-
-  // Fix: Scopes category names per tenant while keeping the relation intact
-  @@unique([tenantId, name])
-}
-
-model Tag {
-  id String @id @default(cuid())
-
-  name String @unique
-
-  posts PostTag[]
-}
-
-model PostTag {
-  postId String
-  tagId  String
-
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
-
-  @@id([postId, tagId])
 }
