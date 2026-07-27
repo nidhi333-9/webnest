@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:17
+
+    container_name: webnest-db
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: techynidhi
+      POSTGRES_PASSWORD: yourpassword
+      POSTGRES_DB: mydb
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+
+    container_name: webnest-app
+
+    depends_on:
+      - db
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      DATABASE_URL: postgresql://techynidhi:mysecretpassword@db:5432/mydb
+
+volumes:
+  postgres_data:
