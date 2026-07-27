@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const auth = await getAuthUser();
@@ -15,9 +15,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const existing = await prisma.category.findUnique({
-      where: { id: params.id },
-    });
+    const { id } = await params;
+
+    const existing = await prisma.category.findUnique({ where: { id } });
     if (!existing || existing.tenantId !== auth.tenantId) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -33,7 +33,7 @@ export async function PATCH(
     }
 
     const category = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: { name: name.trim() },
     });
 
@@ -59,22 +59,21 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await getAuthUser();
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const existing = await prisma.category.findUnique({
-    where: { id: params.id },
-  });
+  const { id } = await params;
+
+  const existing = await prisma.category.findUnique({ where: { id } });
   if (!existing || existing.tenantId !== auth.tenantId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Posts referencing this category have categoryId set to null (onDelete: SetNull)
-  await prisma.category.delete({ where: { id: params.id } });
+  await prisma.category.delete({ where: { id } });
 
   return NextResponse.json({ success: true });
 }

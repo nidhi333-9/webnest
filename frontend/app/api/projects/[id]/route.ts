@@ -8,15 +8,17 @@ export const dynamic = "force-dynamic";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await getAuthUser();
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  const { id } = await params;
+
   const project = await prisma.project.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { technologies: { include: { technology: true } } },
   });
 
@@ -29,7 +31,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const auth = await getAuthUser();
@@ -37,9 +39,9 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const existing = await prisma.project.findUnique({
-      where: { id: params.id },
-    });
+    const { id } = await params;
+
+    const existing = await prisma.project.findUnique({ where: { id } });
     if (!existing || existing.tenantId !== auth.tenantId) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
@@ -79,7 +81,7 @@ export async function PATCH(
 
     const project = await prisma.$transaction(async (tx) => {
       if (Object.keys(scalarData).length > 0) {
-        await tx.project.update({ where: { id: params.id }, data: scalarData });
+        await tx.project.update({ where: { id }, data: scalarData });
       }
 
       if (technologies !== undefined) {
@@ -95,25 +97,23 @@ export async function PATCH(
         }
         const techIds = resolvedTechs.map((t) => t.id);
 
-        // Drop links no longer wanted
         await tx.projectTechnology.deleteMany({
-          where: { projectId: params.id, technologyId: { notIn: techIds } },
+          where: { projectId: id, technologyId: { notIn: techIds } },
         });
 
-        // Add/keep the rest
         for (const technologyId of techIds) {
           await tx.projectTechnology.upsert({
             where: {
-              projectId_technologyId: { projectId: params.id, technologyId },
+              projectId_technologyId: { projectId: id, technologyId },
             },
-            create: { projectId: params.id, technologyId },
+            create: { projectId: id, technologyId },
             update: {},
           });
         }
       }
 
       return tx.project.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { technologies: { include: { technology: true } } },
       });
     });
@@ -140,23 +140,21 @@ export async function PATCH(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await getAuthUser();
   if (!auth) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const existing = await prisma.project.findUnique({
-    where: { id: params.id },
-  });
+  const { id } = await params;
+
+  const existing = await prisma.project.findUnique({ where: { id } });
   if (!existing || existing.tenantId !== auth.tenantId) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // ProjectTechnology rows cascade automatically; orphaned Technology
-  // rows are left in place, same as Tag/Category orphans elsewhere.
-  await prisma.project.delete({ where: { id: params.id } });
+  await prisma.project.delete({ where: { id } });
 
   return NextResponse.json({ success: true });
 }
