@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { generateSessionToken, SESSION_DURATION_MS } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
@@ -61,14 +62,30 @@ export async function POST(request: Request) {
         },
       },
     });
-
+    //create a session and log the user in immediately
+    const token = generateSessionToken();
+    await prisma.session.create({
+      data: {
+        token,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + SESSION_DURATION_MS),
+      },
+    });
     // Don't send password back
     const { password: _, ...userWithoutPassword } = user;
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: "User registered successfully", user: userWithoutPassword },
       { status: 201 },
     );
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: SESSION_DURATION_MS / 1000,
+      path: "/",
+    });
+    return response;
   } catch (error) {
     console.error("Register error:", error);
     return NextResponse.json(
