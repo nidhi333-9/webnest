@@ -11,10 +11,11 @@ concurrency:
 jobs:
   deploy:
     runs-on: self-hosted
+
     steps:
       - name: Pull and redeploy
         run: |
-          cd /home/ubuntu/webnest
-          git pull
+          cd /home/ubuntu/webnest/frontend
+          git pull origin main
           docker compose build --no-cache
           docker compose up -d
