@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if username (tenant subdomain) already exists
+    // Check if username (used in the profile URL) already exists
     const existingTenant = await prisma.tenant.findUnique({
       where: { username },
     });

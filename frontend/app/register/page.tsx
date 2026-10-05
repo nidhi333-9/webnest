@@ -80,7 +80,7 @@ export default function Register() {
             </span>
           </Link>
           <h2 className="text-2xl font-extrabold tracking-tight text-text">
-            Claim your digital nest
+            Create your profile
           </h2>
           <p className="text-sm text-text-light mt-2">
             Build your profile, publish your blogs, and share your workspace.
@@ -140,18 +140,21 @@ export default function Register() {
             <label className="block text-xs font-bold uppercase tracking-wider text-text mb-2 flex justify-between">
               <span>Desired Username</span>
               <span className="text-[10px] text-sage-light lowercase font-medium flex items-center gap-1">
-                <Sparkles size={10} /> your live URL handle
+                <Sparkles size={10} /> your public profile link
               </span>
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-text-light/50">
                 <Globe size={18} />
               </span>
+              <span className="absolute inset-y-0 left-0 flex items-center pl-11 text-sm font-semibold text-sage-light pointer-events-none">
+                webnest.com/
+              </span>
               <input
                 type="text"
                 required
                 placeholder="techynidhi"
-                className="w-full bg-cream/30 border border-text/10 rounded-button py-3 pl-11 pr-28 text-sm text-text placeholder-text-light/40 focus:border-sage focus:bg-white focus:outline-none transition-all"
+                className="w-full bg-cream/30 border border-text/10 rounded-button py-3 pl-[8.75rem] pr-4 text-sm text-text placeholder-text-light/40 focus:border-sage focus:bg-white focus:outline-none transition-all"
                 value={formData.username}
                 onChange={(e) =>
                   setFormData({
@@ -162,9 +165,6 @@ export default function Register() {
                   })
                 }
               />
-              <span className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs font-semibold text-sage-light pointer-events-none bg-gradient-to-l from-cream/30 pl-2">
-                .webnest.com
-              </span>
             </div>
           </div>
 

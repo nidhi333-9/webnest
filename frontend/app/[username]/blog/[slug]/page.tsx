@@ -70,7 +70,7 @@ export default async function PublicPostPage({
         <div className="mx-auto max-w-3xl flex items-center justify-between text-xs font-mono text-text-light/60">
           <div className="flex items-center gap-1.5 font-semibold text-sage">
             <Globe size={14} />
-            <span>{username}.webnest.com</span>
+            <span>webnest.com/{username}</span>
           </div>
           <Link
             href="/"

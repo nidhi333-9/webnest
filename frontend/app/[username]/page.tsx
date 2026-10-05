@@ -60,12 +60,12 @@ export default async function PublicWriterProfile({
 
   return (
     <div className="min-h-screen bg-cream text-text selection:bg-sage-soft">
-      {/* Dynamic Subdomain Header Banner */}
+      {/* Profile URL Header Banner */}
       <div className="bg-white border-b border-text/5 px-6 py-3 sticky top-0 z-40 backdrop-blur-md bg-white/90">
         <div className="mx-auto max-w-4xl flex items-center justify-between text-xs font-mono text-text-light/60">
           <div className="flex items-center gap-1.5 font-semibold text-sage">
             <Globe size={14} />
-            <span>{username}.webnest.com</span>
+            <span>webnest.com/{username}</span>
           </div>
           <Link
             href="/"

@@ -6,9 +6,9 @@ export default function Features() {
   const features = [
     {
       icon: <Globe size={24} className="text-sage" />,
-      title: "Your Personal Subdomain",
+      title: "Your Own Profile Page",
       description:
-        "Instantly claim your unique home on the internet at username.webnest.com. Ready to share with the world right away.",
+        "Every writer gets a public profile at webnest.com/username with their bio, projects, links and posts in one place. Share the link anywhere.",
     },
     {
       icon: <Feather size={24} className="text-sage" />,
@@ -38,7 +38,7 @@ export default function Features() {
       icon: <Zap size={24} className="text-sage" />,
       title: "Lightning Fast Performance",
       description:
-        "Statically optimized routing ensures your custom site loads dynamically in milliseconds globally.",
+        "Your profile and blog posts are served fast, so readers see your content right away.",
     },
   ];
 
@@ -58,8 +58,8 @@ export default function Features() {
           </h2>
           <p className="mt-4 text-base text-text-light">
             WebNest goes beyond simple markdown rendering. It organizes your
-            professional identity into a cohesive, beautiful single-tenant
-            ecosystem.
+            professional identity into a cohesive, beautiful profile page
+            at one simple link.
           </p>
         </div>
 

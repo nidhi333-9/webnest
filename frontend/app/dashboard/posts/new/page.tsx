@@ -165,7 +165,7 @@ export default function NewPost() {
         >
           <div className="flex items-center gap-2 rounded-lg bg-cream/50 px-4 py-2.5 text-xs font-mono text-text-light border border-text/5">
             <Globe size={14} className="text-sage-light" />
-            <span className="opacity-60">yourhub.webnest.com/blog/</span>
+            <span className="opacity-60">webnest.com/yourname/blog/</span>
             <span className="font-bold text-sage truncate">
               {slug || "your-post-url"}
             </span>

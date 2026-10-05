@@ -11,11 +11,10 @@ export default function CTA() {
 
       <div className="relative z-10 mx-auto max-w-4xl">
         <h2 className="text-3xl font-extrabold tracking-tight text-text sm:text-4xl md:text-5xl">
-          Ready to establish your home base?
+          Ready to create your profile?
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base md:text-lg text-text-light leading-relaxed">
-          Create your custom layout profile, deploy your dashboard portal, and
-          begin sharing architectural stories natively inside your domain.
+          Sign up, fill in your profile, and start publishing. You get a public link you can share right away.
         </p>
 
         <div className="mt-8 flex flex-col justify-center items-center gap-4 sm:flex-row">

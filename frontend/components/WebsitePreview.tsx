@@ -72,7 +72,7 @@ export default function WebsitePreview() {
                   <div className="h-3 w-3 rounded-full bg-green-400" />
                 </div>
                 <div className="rounded bg-white border border-text/5 px-4 py-0.5 text-xs font-mono tracking-tight text-text-light w-1/2 text-center shadow-inner">
-                  alexdev.webnest.com
+                  webnest.com/alexdev
                 </div>
                 <div className="w-12" /> {/* Layout balancing spacer */}
               </div>

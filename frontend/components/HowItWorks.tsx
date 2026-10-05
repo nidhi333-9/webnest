@@ -7,9 +7,9 @@ export default function HowItWorks() {
     {
       icon: <UserPlus size={22} />,
       step: "01",
-      title: "Claim your Subdomain",
+      title: "Create your Account",
       description:
-        "Register your writer account in seconds and specify your custom WebNest username handle.",
+        "Sign up in seconds and pick a username. It becomes your profile link: webnest.com/username.",
     },
     {
       icon: <FileEdit size={22} />,
@@ -21,9 +21,9 @@ export default function HowItWorks() {
     {
       icon: <ExternalLink size={22} />,
       step: "03",
-      title: "Publish Globally",
+      title: "Share Your Link",
       description:
-        "Your site updates live on your subdomain instantly for an infinite audience across the web.",
+        "Your profile and published posts go live at your link. Send it to anyone, no reader account needed.",
     },
   ];
 

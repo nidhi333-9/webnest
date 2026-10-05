@@ -29,7 +29,7 @@ export default function Footer() {
             Writer Portal
           </Link>
           <Link href="/register" className="hover:text-text transition-colors">
-            Claim Nest
+            Create Profile
           </Link>
         </div>
 

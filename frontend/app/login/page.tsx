@@ -138,7 +138,7 @@ export default function Login() {
             href="/register"
             className="font-semibold text-sage hover:underline decoration-sage-light"
           >
-            Claim your space instead
+            Create a profile instead
           </Link>
         </div>
       </div>

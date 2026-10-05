@@ -27,9 +27,9 @@ export default function Hero() {
 
             {/* Explanatory Subtext */}
             <p className="mt-6 text-lg leading-relaxed text-text-light max-w-xl mx-auto lg:mx-0">
-              The minimalist platform for writers and creators. Launch a
-              stunning personal website, publish your thoughts, and showcase
-              your best projects—all under your own custom home.
+              The minimalist platform for writers and creators. Create a
+              personal profile page, publish your thoughts, and showcase
+              your best projects—all behind one shareable link.
             </p>
 
             {/* Primary & Secondary Action Buttons */}
@@ -38,7 +38,7 @@ export default function Hero() {
                 href="/register"
                 className="group flex w-full items-center justify-center gap-2 rounded-button bg-sage px-8 py-4 font-semibold text-cream shadow-md transition-all duration-200 hover:bg-sage-light hover:shadow-lg hover:-translate-y-0.5 sm:w-auto"
               >
-                Claim Your Nest
+                Create Your Profile
                 <ArrowRight
                   size={18}
                   className="transition-transform group-hover:translate-x-1"
@@ -85,7 +85,7 @@ export default function Hero() {
                 <div className="h-3 w-3 rounded-full bg-yellow-400/80" />
                 <div className="h-3 w-3 rounded-full bg-green-400/80" />
                 <div className="ml-4 flex items-center justify-center rounded bg-white px-3 py-1 text-[11px] font-medium text-text-light shadow-inner border border-text/5 w-56 md:w-64">
-                  techynidhi.webnest.com
+                  webnest.com/techynidhi
                 </div>
               </div>
 

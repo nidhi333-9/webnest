@@ -112,7 +112,7 @@ export default function Discover() {
                           {creator.name}
                         </h3>
                         <p className="text-xs text-text-light/50 font-mono">
-                          {creator.handle}.webnest.com
+                          webnest.com/{creator.handle}
                         </p>
                       </div>
                     </div>
