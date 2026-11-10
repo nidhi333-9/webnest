@@ -82,7 +82,6 @@ export default async function PublicWriterProfile({
           <div className="flex items-center gap-4">
             <div className="h-20 w-20 rounded-full bg-sage-soft flex items-center justify-center text-4xl shadow-inner border border-text/5 overflow-hidden">
               {profile?.avatar ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={profile.avatar}
                   alt={tenant.displayName}
