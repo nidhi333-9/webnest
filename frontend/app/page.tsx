@@ -15,6 +15,7 @@ export default async function Home() {
       <Navbar isLoggedIn={!!authUser} username={authUser?.username} />
       <Hero />
       <Features />
+      <p className="text-red-500">Hello there</p>
       <HowItWorks />
       <WebsitePreview />
       <CTA />
