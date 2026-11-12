@@ -6,33 +6,27 @@ import { ArrowRight, Sparkles, Globe, Feather, Layout } from "lucide-react";
 export default function Hero() {
   return (
     <section className="relative overflow-hidden bg-cream px-6 py-20 md:py-32">
-      {/* Decorative background blobs for a modern, organic feel */}
       <div className="absolute top-[-10%] left-[-10%] h-[400px] w-[400px] rounded-full bg-sage-soft/30 blur-3xl" />
       <div className="absolute right-[-5%] bottom-[-10%] h-[500px] w-[500px] rounded-full bg-sage-light/10 blur-3xl" />
 
       <div className="relative mx-auto max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-12 lg:items-center lg:gap-8">
-          {/* Left Side: Copy and CTAs */}
           <div className="flex flex-col text-center lg:col-span-6 lg:text-left">
-            {/* Tagline / Announcement Pill */}
             <div className="mx-auto flex items-center gap-2 rounded-full border border-sage/20 bg-sage-soft/40 px-4 py-1.5 text-xs font-semibold tracking-wide text-text lg:mx-0 lg:w-fit">
               <Sparkles size={14} className="text-sage" />
               <span>Now open for early-access creators</span>
             </div>
 
-            {/* Main Catchy Heading */}
             <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-text sm:text-5xl md:text-6xl lg:leading-[1.15]">
               Own your <span className="text-sage">space</span> on the web.
             </h1>
 
-            {/* Explanatory Subtext */}
             <p className="mt-6 text-lg leading-relaxed text-text-light max-w-xl mx-auto lg:mx-0">
               The minimalist platform for writers and creators. Create a
-              personal profile page, publish your thoughts, and showcase
-              your best projects—all behind one shareable link.
+              personal profile page, publish your thoughts, and showcase your
+              best projects—all behind one shareable link.
             </p>
 
-            {/* Primary & Secondary Action Buttons */}
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
               <Link
                 href="/register"
@@ -53,7 +47,6 @@ export default function Hero() {
               </Link>
             </div>
 
-            {/* Mini Feature Highlights */}
             <div className="mt-12 grid grid-cols-3 gap-4 border-t border-text/5 pt-8 text-left">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1.5 text-sage font-semibold text-sm">
@@ -76,10 +69,8 @@ export default function Hero() {
             </div>
           </div>
 
-          {/* Right Side: Interactive Mockup Showcase */}
           <div className="relative lg:col-span-6">
             <div className="relative mx-auto max-w-[500px] rounded-card border border-text/10 bg-white p-2 shadow-2xl transition-transform duration-500 hover:scale-[1.02] lg:max-w-none">
-              {/* Browser Header Bar Window Accent */}
               <div className="flex items-center gap-1.5 border-b border-text/5 px-4 py-3 bg-cream/50 rounded-t-[0.5rem]">
                 <div className="h-3 w-3 rounded-full bg-red-400/80" />
                 <div className="h-3 w-3 rounded-full bg-yellow-400/80" />
@@ -89,9 +80,7 @@ export default function Hero() {
                 </div>
               </div>
 
-              {/* Mockup Profile Presentation Content */}
               <div className="bg-cream/30 p-6 md:p-8">
-                {/* Simulated Profile Identity */}
                 <div className="flex items-center gap-4">
                   <div className="flex h-14 w-14 items-center justify-center rounded-full bg-sage-soft text-2xl shadow-inner">
                     👩‍💻
@@ -106,13 +95,11 @@ export default function Hero() {
                   </div>
                 </div>
 
-                {/* Simulated Bio Description */}
                 <p className="mt-4 text-sm leading-relaxed text-text-light">
                   Building open-source ecosystems and sharing deep-dives into
                   systems engineering. Welcome to my little corner of the web!
                 </p>
 
-                {/* Mockup Inner Feature: "Latest Projects" Widget */}
                 <div className="mt-6 rounded-xl border border-text/5 bg-white p-4 shadow-sm">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-sage">
                     Featured Project
@@ -126,7 +113,6 @@ export default function Hero() {
                   </p>
                 </div>
 
-                {/* Mockup Inner Feature: "Recent Articles" list snippet */}
                 <div className="mt-4 rounded-xl border border-text/5 bg-white p-4 shadow-sm">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-sage">
                     Latest Publication
